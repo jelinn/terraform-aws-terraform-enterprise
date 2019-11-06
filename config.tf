@@ -8,7 +8,7 @@ locals {
 data "template_file" "repl_ptfe_config" {
   template = "${local.rptfeconf[local.install_type]}"
 
-  vars {
+  vars  = {
     hostname               = "${module.lb.endpoint}"
     enc_password           = "${local.encryption_password}"
     iact_subnet_list       = "${var.iact_subnet_list}"
@@ -45,7 +45,7 @@ data "template_file" "cloud_config" {
   count    = "${var.primary_count}"
   template = "${file("${path.module}/templates/cloud-config.yaml")}"
 
-  vars {
+  vars = {
     hostname = "${module.lb.endpoint}"
 
     license_b64     = "${base64encode(file("${var.license_file}"))}"
@@ -94,7 +94,7 @@ data "template_cloudinit_config" "config" {
 data "template_file" "cloud_config_secondary" {
   template = "${file("${path.module}/templates/cloud-config-secondary.yaml")}"
 
-  vars {
+  vars = {
     install_ptfe_sh      = "${base64encode(file("${path.module}/files/install-ptfe.sh"))}"
     bootstrap_token      = "${random_string.bootstrap_token_id.result}.${random_string.bootstrap_token_suffix.result}"
     cluster_api_endpoint = "${aws_elb.cluster_api.dns_name}:6443"
@@ -126,7 +126,7 @@ data "template_cloudinit_config" "config_secondary" {
 data "template_file" "ssh_config" {
   template = "${file("${path.module}/templates/ssh_config")}"
 
-  vars {
+  vars = {
     hostname     = "${element(aws_instance.primary.*.public_ip, 0)}"
     ssh_user     = "${var.ssh_user != "" ? var.ssh_user : local.default_ssh_user}"
     keyfile_path = "${module.common.ssh_priv_key_file}"
